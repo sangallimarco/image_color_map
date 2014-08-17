@@ -13,12 +13,16 @@ class imageMean:
 		self.img = None
 		self.thumbSize = 200  
 		self.map = {
-			'redId': colorsys.rgb_to_hls(255,0,0),
-			'greenId': colorsys.rgb_to_hls(0, 255, 0),
-			'blueId': colorsys.rgb_to_hls(0, 0, 255),
-			'yellowId': colorsys.rgb_to_hls(255, 255, 0),
+			'redId': self.toHLS((255,0,0)),
+			'greenId': self.toHLS((0, 255, 0)),
+			'blueId': self.toHLS((0, 0, 255)),
+			'yellowId': self.toHLS((255, 255, 0)),
 
 		}
+
+	def toHLS(self, color):
+		r, g, b = [ x/255.0 for x in color ]
+		return colorsys.rgb_to_hls(r, g ,b)
 
 	def loadImage(self, src):
 		fd = urllib.urlopen(src)
@@ -37,8 +41,7 @@ class imageMean:
 
 		#skip background
 		for color in colors:
-			r, g, b = [ x/255.0 for x in color[1] ]
-			colorhls = colorsys.rgb_to_hls(r, g ,b)
+			colorhls = self.toHLS(color[1])
 			if  colorhls[2] < 0.9 and colorhls[2] > 0.1:
 				break
 
@@ -47,7 +50,7 @@ class imageMean:
 		result = 'Error'
 
 		for k,v in self.map.iteritems():
-			diff = int(abs(v[0] - colorhls[0]) * 100)
+			diff = abs( v[0] - colorhls[0] )
 			if diff < minDiff:
 				minDiff =diff
 				result = k
