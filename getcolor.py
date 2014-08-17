@@ -13,14 +13,14 @@ class imageMean:
 		self.img = None
 		self.thumbSize = 200  
 		self.map = {
-			'redId': self.toHLS((255,0,0)),
-			'greenId': self.toHLS((0, 255, 0)),
-			'blueId': self.toHLS((0, 0, 255)),
-			'yellowId': self.toHLS((255, 255, 0)),
+			'redId': self._toHLS((255,0,0)),
+			'greenId': self._toHLS((0, 255, 0)),
+			'blueId': self._toHLS((0, 0, 255)),
+			'yellowId': self._toHLS((255, 255, 0)),
 
 		}
 
-	def toHLS(self, color):
+	def _toHLS(self, color):
 		r, g, b = [ x/255.0 for x in color ]
 		return colorsys.rgb_to_hls(r, g ,b)
 
@@ -41,7 +41,7 @@ class imageMean:
 
 		#skip background
 		for color in colors:
-			colorhls = self.toHLS(color[1])
+			colorhls = self._toHLS(color[1])
 			if  colorhls[2] < 0.9 and colorhls[2] > 0.1:
 				break
 
