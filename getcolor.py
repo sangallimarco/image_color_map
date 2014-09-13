@@ -1,11 +1,9 @@
 from colormath.color_objects import XYZColor, sRGBColor, LabColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
-from PIL import Image, ImageCms
+from PIL import Image
 import urllib2 as urllib
 import cStringIO
-import colorsys
-from math import floor
 import sys
 
 """
@@ -59,7 +57,7 @@ class imageMean:
 				break
 
 		#calculate min distance
-		mindistance = (255**2) * 3
+		mindistance = 10
 		result = 'Error'
 
 		for id, mapcolor in self.map.iteritems():
