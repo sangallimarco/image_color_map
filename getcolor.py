@@ -1,4 +1,7 @@
-from PIL import Image
+from colormath.color_objects import XYZColor, sRGBColor, LabColor
+from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie2000
+from PIL import Image, ImageCms
 import urllib2 as urllib
 import cStringIO
 import colorsys
@@ -13,14 +16,14 @@ class imageMean:
 		self.img = None
 		self.thumbSize = 400  
 		self.map = {
-			'redId': (255,0,0),
-			'greenId': (0, 255, 0),
-			'blueId': (0, 0, 255),
-			'yellowId': (255, 255, 0),
-			'black': (0, 0, 0),
+			'redId': self.convertToLAB((255,0,0)),
+			'greenId': self.convertToLAB((0, 255, 0)),
+			'blueId': self.convertToLAB((0, 0, 255)),
+			'yellowId': self.convertToLAB((255, 255, 0)),
+			'black': self.convertToLAB((0, 0, 0)),
 
 		}
-		self.background = (255,255,255)
+		self.background = self.convertToLAB((255,255,255))
 
 
 	def loadImage(self, src):
@@ -34,8 +37,13 @@ class imageMean:
 
 		self.img = img
 
+	def convertToLAB(self, color):
+		r,g,b = tuple([c / 255.0 for c in color])
+		rgb = sRGBColor(r,g,b)
+		return convert_color(rgb, LabColor, target_illuminant='d50')
+
 	def distance(self, a, b):
-		return (a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2
+		return delta_e_cie2000(a, b)
 		
 	def mean(self):
 		colors = self.img.getcolors()
@@ -45,7 +53,7 @@ class imageMean:
 
 		#skip background
 		for color in colors:
-			primary = color[1]
+			primary = self.convertToLAB(color[1])
 			distance = self.distance(primary, self.background)
 			if distance > 100:
 				break
